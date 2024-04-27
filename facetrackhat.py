@@ -56,13 +56,15 @@ while True:
         prev_h = h-20
         prev_w = w-20
         face_region = frame[y : y + h, x : x + w]
-
+        
         # Resize the hat image to match the face region
-        hat_resized = cv2.resize(overlay_color, (w, h), interpolation=cv2.INTER_AREA)
+        hat_resized = cv2.resize(overlay_color, (face_region.shape[1], face_region.shape[0]), interpolation=cv2.INTER_AREA)
 
-        mask = cv2.resize(mask, (w, h), interpolation=cv2.INTER_AREA)
+        mask = cv2.resize(mask, (face_region.shape[1], face_region.shape[0]), interpolation=cv2.INTER_AREA)
 
         # Overlay the hat image on the face region
+        print(w,h)
+        print(face_region.shape,mask.shape)
         combined_image_bg = cv2.bitwise_and(
             face_region, face_region, mask=cv2.bitwise_not(mask)
         )
@@ -71,7 +73,7 @@ while True:
         y = (y + prev_y ) // 2
         prev_x = x
         prev_y = y
-        frame[y : y + h, x : x + w] = cv2.add(combined_image_bg, combined_image_fg)
+        frame[y : y + combined_image_bg.shape[0], x : x + combined_image_bg.shape[1]] = cv2.add(combined_image_bg, combined_image_fg)
         prevFrame = frame
     # Display the frame with the tracked face and added hat
     if len(faces) == 0:
